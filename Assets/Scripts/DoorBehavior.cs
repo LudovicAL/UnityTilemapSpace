@@ -1,32 +1,50 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Tilemaps;
 
 public class DoorBehavior : MonoBehaviour {
 
-	public TileBase doorClosed2;
-	public TileBase doorClosed1;
-	public TileBase doorClosed0;
-	public TileBase doorOpen2;
-	public TileBase doorOpen1;
-	public TileBase doorOpen0;
-	public AudioClip doorOpen;
-	public AudioClip doorClose;
+
+	public bool isMainDoor;
+	public PassingDoorEvent passingDoorEvent;
+	[SerializeField]
+	private TileBase doorClosed2;
+	[SerializeField]
+	private TileBase doorClosed1;
+	[SerializeField]
+	private TileBase doorClosed0;
+	[SerializeField]
+	private TileBase doorOpen2;
+	[SerializeField]
+	private TileBase doorOpen1;
+	[SerializeField]
+	private TileBase doorOpen0;
+	[SerializeField]
+	private AudioClip doorOpen;
+	[SerializeField]
+	private AudioClip doorClose;
 	private bool doorIsOpen = false;
 	private Tilemap tilemapDoors0;
 	private Tilemap tilemapDoors1;
 	private Tilemap tilemapDoors2;
 	private Transform characterTransform;
 	private AudioSource audioSource;
+	private bool hasBeenOnDoor = false;
+	private Vector3Int lastDoorTileCoordinates;
+
+	private void Awake() {
+		audioSource = this.GetComponent<AudioSource>();
+	}
 
 	// Start is called before the first frame update
 	void Start() {
 		tilemapDoors0 = this.transform.Find("Tilemap Doors 0").GetComponent<Tilemap>();
 		tilemapDoors1 = this.transform.Find("Tilemap Doors 1").GetComponent<Tilemap>();
 		tilemapDoors2 = this.transform.Find("Tilemap Doors 2").GetComponent<Tilemap>();
-		audioSource = this.GetComponent<AudioSource>();
 		characterTransform = GameObject.FindGameObjectWithTag("Player").transform;
+		passingDoorEvent = new PassingDoorEvent();
 	}
 
 	// Update is called once per frame
@@ -41,6 +59,27 @@ public class DoorBehavior : MonoBehaviour {
 		} else {
 			if (IsInFrontOfDoor(characterCellCoordinates)) {
 				OpenDoor();
+			}
+		}
+		CheckEntry(characterCellCoordinates);
+	}
+
+	//Checks if the playe is entering or exiting the building
+	private void CheckEntry(Vector3Int characterCellCoordinates) {
+		if (isMainDoor) {
+			if (tilemapDoors0.HasTile(characterCellCoordinates) || tilemapDoors1.HasTile(characterCellCoordinates) || tilemapDoors2.HasTile(characterCellCoordinates)) {
+				if (hasBeenOnDoor) {
+					if (characterCellCoordinates.y > lastDoorTileCoordinates.y) {
+						//Character is entering
+						passingDoorEvent.Invoke(true);
+					} else if (characterCellCoordinates.y < lastDoorTileCoordinates.y) {
+						//Character is exiting
+						passingDoorEvent.Invoke(false);
+					}
+				} else {
+					hasBeenOnDoor = true;
+				}
+				lastDoorTileCoordinates = characterCellCoordinates;
 			}
 		}
 	}
@@ -69,4 +108,8 @@ public class DoorBehavior : MonoBehaviour {
 		audioSource.Play();
 		doorIsOpen = false;
 	}
+}
+
+[System.Serializable]
+public class PassingDoorEvent : UnityEvent<bool> {
 }

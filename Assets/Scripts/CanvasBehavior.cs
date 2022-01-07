@@ -5,26 +5,37 @@ using UnityEngine.UI;
 
 public class CanvasBehavior : MonoBehaviour {
 
-	public AudioClip boingAudioClip;
-	public AudioClip zouAudioClip;
+	[SerializeField]
+	private AudioClip boingAudioClip;
+	[SerializeField]
+	private AudioClip zouAudioClip;
 	private AudioSource canvasAudioSource;
 	private AudioSource musicAudioSource;
 	private GameObject aboutPanel;
 
-    // Start is called before the first frame update
-    void Start() {
+	private void Awake() {
 		canvasAudioSource = this.GetComponent<AudioSource>();
+	}
+
+	// Start is called before the first frame update
+	void Start() {
 		aboutPanel = transform.Find("Panel About").gameObject;
 		musicAudioSource = transform.Find("Toggle Music").GetComponent<AudioSource>();
-    }
+		ShowAboutPanel(false);
+
+	}
 
     // Update is called once per frame
     void Update() {
-		if (Input.GetKeyDown(KeyCode.Escape)) {
+	}
+
+	//Shows or hide the About panel
+	public void ShowAboutPanel(bool value) {
+		if (value && !aboutPanel.activeSelf) {
 			canvasAudioSource.clip = boingAudioClip;
 			canvasAudioSource.Play();
 		}
-		aboutPanel.SetActive(Input.GetKey(KeyCode.Escape));
+		aboutPanel.SetActive(value);
 	}
 
 	//When a URL button is clicked

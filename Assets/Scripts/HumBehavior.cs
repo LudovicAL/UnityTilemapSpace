@@ -1,18 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class HumBehavior : MonoBehaviour {
 
-	public float minTimeBetweenHums = 15.0f;
-	public float maxTimeBetweenHums = 25.0f;
-	public AudioClip[] humClips;
+	[SerializeField]
+	private float minTimeBetweenHums = 15.0f;
+	[SerializeField]
+	private float maxTimeBetweenHums = 25.0f;
+	[SerializeField]
+	private AudioClip[] humClips;
 	private AudioSource audioSource;
 	private float timeOfNextHum;
 
+	private void Awake() {
+		audioSource = this.GetComponent<AudioSource>();
+		this.GetComponent<PlayerInput>().actions["Talk"].started += OnTalk;
+	}
+
 	// Start is called before the first frame update
 	void Start() {
-		audioSource = this.GetComponent<AudioSource>();
 		SetTimeOfNextHum();
 	}
 
@@ -23,9 +31,14 @@ public class HumBehavior : MonoBehaviour {
 		}
     }
 
+	//When a move action is triggered
+	public void OnTalk(InputAction.CallbackContext context) {
+		PlayRandomHum();
+	}
+
 	//Plays a random Hum
-	private void PlayRandomHum() {
-		AudioClip clipToPlay = null;
+	public void PlayRandomHum() {
+		AudioClip clipToPlay = humClips[Random.Range(0, humClips.Length)];
 		while (clipToPlay == audioSource.clip) {
 			clipToPlay = humClips[Random.Range(0, humClips.Length)];
 		}
