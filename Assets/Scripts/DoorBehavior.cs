@@ -36,6 +36,7 @@ public class DoorBehavior : MonoBehaviour {
 
 	private void Awake() {
 		audioSource = this.GetComponent<AudioSource>();
+		passingDoorEvent = new PassingDoorEvent();
 	}
 
 	// Start is called before the first frame update
@@ -44,7 +45,6 @@ public class DoorBehavior : MonoBehaviour {
 		tilemapDoors1 = this.transform.Find("Tilemap Doors 1").GetComponent<Tilemap>();
 		tilemapDoors2 = this.transform.Find("Tilemap Doors 2").GetComponent<Tilemap>();
 		characterTransform = GameObject.FindGameObjectWithTag("Player").transform;
-		passingDoorEvent = new PassingDoorEvent();
 	}
 
 	// Update is called once per frame
