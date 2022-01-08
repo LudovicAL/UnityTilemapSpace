@@ -29,7 +29,7 @@ public class Simple2dControler : MonoBehaviour {
 		Move(m_Move);
 	}
 
-	//When a move action is triggered with the keyboard
+	//When a move action is triggered with the keyboard or a controller
 	public void OnMove(InputAction.CallbackContext context) {
 		m_Move = context.ReadValue<Vector2>();
 	}
