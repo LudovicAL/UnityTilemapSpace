@@ -22,7 +22,7 @@ public class CanvasBehavior : MonoBehaviour {
 		aboutPanel = transform.Find("Panel About").gameObject;
 		musicAudioSource = transform.Find("Toggle Music").GetComponent<AudioSource>();
 		ShowAboutPanel(false);
-		if (!Input.touchSupported) {
+		if (Application.platform != RuntimePlatform.Android && Application.platform != RuntimePlatform.IPhonePlayer) {
 			transform.Find("Panel Game").gameObject.SetActive(false);
 		}
 	}
